@@ -1,5 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
+const extractComponent = require('./src/extract-component');
 const vscode = require('vscode');
 
 // this method is called when your extension is activated
@@ -14,22 +15,11 @@ function activate(context) {
   // The commandId parameter must match the command field in package.json
   let disposable = vscode.commands.registerCommand(
     'extension.extractJsx',
-    function() {
-      // The code you place here will be executed every time your command is executed
-      const editor = vscode.window.activeTextEditor;
-      if (!editor) {
-        //no open editor
-        return;
-      }
-
-      const { selection } = editor;
-      const text = editor.document.getText(selection);
-
-      vscode.window.showInformationMessage(`Selected chars: ${text.length}`);
-    }
+    extractComponent
   );
 
   context.subscriptions.push(disposable);
+  context.subscriptions.push(extractComponent);
 }
 exports.activate = activate;
 
