@@ -11,14 +11,14 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.sayHello"
+        "onCommand:extension.extractJsx"
     ],
     "main": "./extension",
     "contributes": {
         "commands": [
             {
-                "command": "extension.sayHello",
-                "title": "Hello World"
+                "command": "extension.extractJsx",
+                "title": "Extract JSX"
             }
         ]
     },
