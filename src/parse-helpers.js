@@ -1,5 +1,11 @@
 const babylon = require('babylon');
-const traverse = require('babel-traverse');
+const traverse = require('babel-traverse').default;
+
+module.exports = {
+  parse,
+  getPropNames,
+  getImports,
+};
 
 function warnAboutUnextractableImport(importName, isVar = false) {
   const detail = [`Couldn't find an import for component '${importName}'.`];
@@ -9,19 +15,27 @@ function warnAboutUnextractableImport(importName, isVar = false) {
   return detail.join('\n');
 }
 
-export function parse(code) {
+function parse(code) {
   return babylon.parse(code, {
     sourceType: 'module',
-    plugins: ['jsx'],
+    plugins: [
+      'jsx',
+      'flow',
+      'classProperties',
+      'objectRestSpread',
+      'functionBind',
+    ],
   });
 }
 
-export function getPropNames(node) {
+function getPropNames(node) {
   let vars = [];
   traverse(node, {
     MemberExpression: function(nodePath) {
-      const name = nodePath.node.object.name;
-      if (vars.indexOf(name) < 0) {
+      //TODO handle `this`
+      const { name } = nodePath.node.object;
+
+      if (name && !vars.includes(name)) {
         vars.push(name);
       }
     },
@@ -38,7 +52,7 @@ function getImportsInNode(node) {
   traverse(node, {
     JSXElement: function(nodePath) {
       const { name } = nodePath.node.openingElement.name;
-      if (!imports.includes(name) || !isUpperCase(name[0])) {
+      if (!imports.includes(name) && !isUpperCase(name[0])) {
         return;
       }
       imports.push(name);
@@ -47,7 +61,7 @@ function getImportsInNode(node) {
   return imports;
 }
 
-export function getImports(node, fileNode) {
+function getImports(node, fileNode) {
   const imports = getImportsInNode(node);
   var sourcesByImport = {};
   var importsBySource = {};

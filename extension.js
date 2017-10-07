@@ -1,3 +1,13 @@
+/*
+
+https://code.visualstudio.com/docs/extensions/example-word-count
+https://code.visualstudio.com/docs/extensionAPI/overview
+https://code.visualstudio.com/docs/extensionAPI/extension-points
+https://code.visualstudio.com/docs/extensionAPI/activation-events
+https://code.visualstudio.com/docs/extensionAPI/patterns-and-principles
+
+*/
+
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 const extractComponent = require('./src/extract-component');
