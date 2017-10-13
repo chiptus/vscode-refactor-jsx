@@ -31,13 +31,19 @@ function parse(code) {
 function getPropNames(node) {
   let vars = [];
   traverse(node, {
-    MemberExpression: function(nodePath) {
+    MemberExpression(nodePath) {
       //TODO handle `this`
       const { name } = nodePath.node.object;
-
+      console.log(name);
       if (name && !vars.includes(name)) {
         vars.push(name);
       }
+    },
+    // JSXExpressionContainer(nodePath) {
+    //   console.log('cont', nodePath.node);
+    // },
+    ThisExpression(nodePath) {
+      console.log('exp', nodePath.data);
     },
   });
   return vars;

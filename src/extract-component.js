@@ -12,33 +12,37 @@ function extractComponent() {
 
   const { selection } = editor;
   const text = editor.document.getText(selection);
-  try {
-    const { component, replaceCode } = convert(
-      text,
-      editor.document.getText(),
-      'NewComponent'
-    );
-    replaceComponent(replaceCode);
-    createNewComponent(component);
-  } catch (e) {
-    console.log('errot', e);
-  }
+  window.showInputBox({ prompt: 'Name of component' }).then(componentName => {
+    try {
+      const { component, replaceCode, importLine } = convert(
+        text,
+        editor.document.getText(),
+        componentName
+      );
+      replaceComponent(importLine, replaceCode);
+      createNewComponent(component);
+    } catch (e) {
+      if (e instanceof SyntaxError) {
+        window.showErrorMessage('selected JSX is invalid');
+      }
+    }
+  });
 
-  function replaceComponent(replaceCode) {
+  function replaceComponent(importLine, replaceCode) {
     editor.edit(editBuilder => {
+      editBuilder.insert(new vscode.Position(0, 0), importLine);
       editBuilder.replace(selection, replaceCode);
     });
   }
 
   function createNewComponent(component) {
     vscode.workspace
-      .openTextDocument(`untitled:~/repos/new-component.js`)
+      .openTextDocument({
+        language: 'javascript',
+        content: component,
+      })
       .then(newCompDocument => {
-        window.showTextDocument(newCompDocument).then(newCompEditor => {
-          newCompEditor.edit(newCompEditBuilder => {
-            newCompEditBuilder.insert(new vscode.Position(0, 0), component);
-          });
-        });
+        window.showTextDocument(newCompDocument);
       });
   }
 }
