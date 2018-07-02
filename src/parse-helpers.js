@@ -1,6 +1,7 @@
 const babylon = require('@babel/parser');
 const traverse = require('@babel/traverse').default;
 const generator = require('@babel/generator').default;
+const types = require('@babel/types');
 
 module.exports = {
   parse,
@@ -35,6 +36,7 @@ function getPropDict(node) {
     JSXExpressionContainer(nodePath) {
       const propName = nodePath.parent.name.name;
       vars[propName] = generator(nodePath.node).code;
+      nodePath.get('expression').replaceWith(types.identifier(propName));
     },
   });
   return vars;
