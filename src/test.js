@@ -29,9 +29,19 @@ describe('tests simple component', () => {
   const name = 'test';
   const expected = {
     replacement: `<Test />`,
-    component: `() => <div>Hello</div>`,
+    component: `() => <div>Hello</div>;`,
   };
   const returns = replace(name, code);
+  expect(returns.replacement).toBe(expected.replacement);
+  expect(returns.component).toBe(expected.component);
+});
+
+describe('test component with a single function attribute', () => {
+  const expected = {
+    replacement: '<Test t={() => t} />',
+    component: '({t}) => <div t={t} />;',
+  };
+  const returns = replace(`test`, '<div t={() => t} />');
   expect(returns.replacement).toBe(expected.replacement);
   expect(returns.component).toBe(expected.component);
 });
@@ -39,5 +49,3 @@ describe('tests simple component', () => {
 function expectError(obj) {
   expect(obj).toHaveProperty('error');
 }
-
-console.log(replace(`test`, '<div t={() => t} />'));
