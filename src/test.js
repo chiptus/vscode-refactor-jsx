@@ -1,4 +1,4 @@
-const { replace } = require('./replace').default;
+const { replace } = require('./replace');
 
 describe('gets exactly 2 arguments - 2 strings, otherwise returns an error', () => {
   test('returns error when gets 1 arguments', () => {
@@ -7,8 +7,12 @@ describe('gets exactly 2 arguments - 2 strings, otherwise returns an error', () 
 });
 
 describe('returns an error if not jsx or invalid jsx', () => {
-  expectError(replace('test', '<div>'));
-  expectError(replace('test', "const hello = 'walla'"));
+  test('tests invalid jsx', () => {
+    expectError(replace('test', '<div>'));
+  });
+  test('tests non jsx code', () => {
+    expectError(replace('test', "const hello = 'walla'"));
+  });
 });
 
 describe('returns shape of {replacement, component}', () => {
@@ -28,10 +32,12 @@ describe('tests simple component', () => {
     component: `() => <div>Hello</div>`,
   };
   const returns = replace(name, code);
-  expect(expected.replacement).toBe(returns.replacement);
-  expect(expected.component).toBe(returns.component);
+  expect(returns.replacement).toBe(expected.replacement);
+  expect(returns.component).toBe(expected.component);
 });
 
 function expectError(obj) {
   expect(obj).toHaveProperty('error');
 }
+
+console.log(replace(`test`, '<div t={() => t} />'));
