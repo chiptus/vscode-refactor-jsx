@@ -1,16 +1,17 @@
-const babylon = require('babylon');
-const traverse = require('babel-traverse').default;
+const babylon = require('@babel/parser');
+const traverse = require('@babel/traverse').default;
+const generator = require('@babel/generator').default;
 
 module.exports = {
   parse,
-  getPropNames,
+  getPropDict,
   getImports,
 };
 
 function warnAboutUnextractableImport(importName, isVar = false) {
   const detail = [`Couldn't find an import for component '${importName}'.`];
   if (isVar) {
-    detail.push('Looks like its declared in this file?');
+    detail.push("Looks like it's declared in this file?");
   }
   return detail.join('\n');
 }
@@ -28,22 +29,12 @@ function parse(code) {
   });
 }
 
-function getPropNames(node) {
-  let vars = [];
+function getPropDict(node) {
+  let vars = {};
   traverse(node, {
-    MemberExpression(nodePath) {
-      //TODO handle `this`
-      const { name } = nodePath.node.object;
-      console.log(name);
-      if (name && !vars.includes(name)) {
-        vars.push(name);
-      }
-    },
-    // JSXExpressionContainer(nodePath) {
-    //   console.log('cont', nodePath.node);
-    // },
-    ThisExpression(nodePath) {
-      console.log('exp', nodePath.data);
+    JSXExpressionContainer(nodePath) {
+      const propName = nodePath.parent.name.name;
+      vars[propName] = generator(nodePath.node).code;
     },
   });
   return vars;
