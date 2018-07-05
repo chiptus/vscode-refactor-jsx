@@ -1,6 +1,6 @@
 const vscode = require('vscode');
 const { window } = vscode;
-const convert = require('./extract-helpers');
+const { replace } = require('refactor-jsx-helpers');
 module.exports = extractComponent;
 
 function extractComponent() {
@@ -10,40 +10,52 @@ function extractComponent() {
     return;
   }
 
+  //TODO create a npm module that gets a file name, a selection (cursor placement + length), and a new component name and outputs {component, replaceCode, importLine}
+
   const { selection } = editor;
-  const text = editor.document.getText(selection);
+  const selectionText = editor.document.getText(selection);
   window.showInputBox({ prompt: 'Name of component' }).then(componentName => {
-    try {
-      const { component, replaceCode, importLine } = convert(
-        text,
-        editor.document.getText(),
-        componentName
-      );
-      replaceComponent(importLine, replaceCode);
-      createNewComponent(component);
-    } catch (e) {
-      if (e instanceof SyntaxError) {
-        window.showErrorMessage('selected JSX is invalid');
-      }
+    const { component, replacement, error } = replace(
+      componentName,
+      selectionText
+    );
+    if (error) {
+      window.showErrorMessage(error);
+      return;
     }
+    // replaceComponent(replacement);
+    // createNewComponent(component);
+    editor.edit(editBuilder => {
+      // editBuilder.insert(new vscode.Position(0, 0), importLine);
+      editBuilder.replace(selection, replacement);
+      editBuilder.insert(
+        new vscode.Position(editor.document.lineCount, 0),
+        '\n' + component
+      );
+    });
   });
 
-  function replaceComponent(importLine, replaceCode) {
+  function replaceComponent(replaceCode) {
     editor.edit(editBuilder => {
-      editBuilder.insert(new vscode.Position(0, 0), importLine);
+      // editBuilder.insert(new vscode.Position(0, 0), importLine);
       editBuilder.replace(selection, replaceCode);
     });
   }
 
   function createNewComponent(component) {
-    vscode.workspace
-      .openTextDocument({
-        language: 'javascript',
-        content: component,
-      })
-      .then(newCompDocument => {
-        window.showTextDocument(newCompDocument);
-      });
+    // const currentFile = window.activeTextEditor.document.uri;
+    // // TODO I am in the middle of figure out where to save the file
+    // let filePath = vscode.workspace.getWorkspaceFolder(
+    //   vscode.Uri.parse('component')
+    // );
+    // vscode.workspace
+    //   .openTextDocument(vscode.Uri.parse('untitled:' + filePath))
+    //   .then(newCompDocument => {
+    //     window.showTextDocument(newCompDocument);
+    //   });
+    editor.edit(editBuilder => {
+      editBuilder.insert(new vscode.Position(0, 0), component);
+    });
   }
 }
 
