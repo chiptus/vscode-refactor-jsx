@@ -3,6 +3,7 @@
     "displayName": "Refactor-JSX",
     "description": "Extract a selection of jsx to a new component",
     "version": "0.0.1",
+    "repository": "https://github.com/chiptus/vscode-refactor-jsx",
     "publisher": "chiptus",
     "engines": {
         "vscode": "^1.17.0"
@@ -31,18 +32,12 @@
         "@types/mocha": "^2.2.42",
         "@types/node": "^7.0.0",
         "eslint": "^4.6.1",
-        "eslint-plugin-jest": "^21.17.0",
-        "jest": "^23.2.0",
         "mocha": "^3.5.0",
         "typescript": "^2.5.2",
         "vscode": "^1.1.5"
     },
     "dependencies": {
-        "@babel/generator": "^7.0.0-beta.51",
-        "@babel/parser": "^7.0.0-beta.51",
-        "@babel/traverse": "^7.0.0-beta.51",
-        "@babel/types": "^7.0.0-beta.51",
         "prettier": "^1.7.4",
-        "refactor-jsx-helpers": "^0.0.1"
+        "refactor-jsx-helpers": "0.0.2"
     }
 }
